@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mes séances de cinéma</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#141312;--bg2:#1d1c1a;--line:#34322e;--ink:#f0efec;--ink2:#c3c2b7;--ink3:#8f8d84;
+  --paper:#f5eedd;--paperInk:#2a2418;--paperInk2:#6b5f48;--gold:#e0b44c;
+  --g-drame:#3987e5;--g-thriller:#d95926;--g-comdram:#199e70;--g-anim:#c98500;
+  --g-action:#d55181;--g-sf:#0ca30c;--g-doc:#9085e9;--g-com:#e66767;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif}
+header{padding:48px 24px 20px;text-align:center;border-bottom:1px solid var(--line);
+  background:radial-gradient(ellipse at 50% -40%,#3a2f1a 0%,var(--bg) 70%)}
+header h1{font-family:'Bebas Neue',sans-serif;font-weight:400;font-size:clamp(44px,8vw,84px);letter-spacing:4px;margin:0;color:var(--gold);line-height:1}
+header p{margin:10px 0 0;color:var(--ink2);font-size:15px}
+nav{display:flex;justify-content:center;gap:8px;margin-top:24px}
+nav button{font:500 14px Inter,sans-serif;background:transparent;color:var(--ink2);border:1px solid var(--line);padding:9px 20px;border-radius:999px;cursor:pointer}
+nav button[aria-selected="true"]{background:var(--gold);color:#1a1408;border-color:var(--gold)}
+main{max-width:1180px;margin:0 auto;padding:24px}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px}
+.toolbar input{flex:1 1 220px;min-width:180px;background:var(--bg2);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:9px 12px;font:14px Inter,sans-serif}
+.chip{font:500 12px Inter,sans-serif;background:var(--bg2);color:var(--ink2);border:1px solid var(--line);border-radius:999px;padding:6px 11px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.chip i{width:9px;height:9px;border-radius:50%;display:inline-block}
+.chip[aria-pressed="true"]{color:var(--ink);border-color:var(--ink2);background:#2a2926}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.year{margin:28px 0 14px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:2;background:var(--bg);padding:8px 0}
+.year h2{font-family:'Bebas Neue',sans-serif;font-weight:400;font-size:56px;letter-spacing:2px;margin:0;line-height:1;color:var(--ink)}
+.year span{font:500 12px 'IBM Plex Mono',monospace;color:var(--bg);background:var(--gold);padding:4px 9px;border-radius:4px;letter-spacing:1px}
+.year::after{content:"";flex:1;height:1px;background:repeating-linear-gradient(90deg,var(--line) 0 8px,transparent 8px 14px)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.ticket{--g:#888;position:relative;display:flex;overflow:hidden;min-height:132px;color:var(--paperInk);
+  background:color-mix(in srgb,var(--g) 20%,var(--paper));border-radius:8px;
+  transition:transform .15s ease}
+.ticket:hover{transform:translateY(-3px) rotate(-.4deg)}
+.ticket .main{flex:1;padding:14px 16px 14px 22px;border-right:2px dashed color-mix(in srgb,var(--g) 55%,var(--paperInk2));min-width:0;position:relative}
+.ticket .main::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--g)}
+.ticket .top{display:flex;justify-content:space-between;font:500 10.5px 'IBM Plex Mono',monospace;letter-spacing:1.5px;color:var(--paperInk2);text-transform:uppercase}
+.ticket h3{font-family:'DM Serif Display',serif;font-weight:400;font-size:21px;line-height:1.15;margin:8px 0 4px;color:var(--paperInk)}
+.ticket .dir{font:400 12.5px Inter,sans-serif;color:var(--paperInk2);margin:0 0 10px}
+.ticket .meta{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font:500 11px Inter,sans-serif;padding:3px 8px;border-radius:999px;background:#ffffff8c;color:var(--paperInk);display:inline-flex;align-items:center;gap:5px}
+.tag i{width:8px;height:8px;border-radius:50%;background:var(--g)}
+.ticket .stub{width:84px;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-family:'IBM Plex Mono',monospace;color:var(--paperInk2);font-size:10.5px;letter-spacing:1px;text-transform:uppercase;gap:2px}
+.ticket .stub b{font:400 28px 'Bebas Neue',sans-serif;color:var(--paperInk);letter-spacing:1px;line-height:1}
+.ticket .stub::before,.ticket .stub::after{content:"";position:absolute;left:-11px;width:20px;height:20px;border-radius:50%;background:var(--bg)}
+.ticket .stub::before{top:-10px}.ticket .stub::after{bottom:-10px}
+.ticket .stub .no{margin-top:6px;font-size:10px;writing-mode:horizontal-tb;opacity:.85}
+.empty{color:var(--ink3);text-align:center;padding:40px}
+/* stats */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:20px}
+.kpi{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:16px}
+.kpi small{display:block;color:var(--ink2);font-size:13px}
+.kpi b{display:block;font:400 40px 'Bebas Neue',sans-serif;letter-spacing:1px;margin-top:4px;color:var(--ink)}
+.kpi em{font-style:normal;color:var(--ink3);font-size:12px}
+.charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,520px),1fr));gap:16px}
+.card{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:18px 18px 12px}
+.card.wide{grid-column:1/-1}
+#c-carte svg{overflow:hidden;max-width:980px;margin:0 auto}
+.card h3{margin:0 0 2px;font:500 16px Inter,sans-serif}
+.card p.sub{margin:0 0 12px;color:var(--ink3);font-size:13px}
+.card svg{width:100%;height:auto;display:block;overflow:visible}
+.card svg text{font-family:Inter,sans-serif;fill:var(--ink2);font-size:12px}
+.card svg .val{fill:var(--ink);font-weight:500}
+.card svg .hit{fill:transparent;cursor:default}
+.card svg .hit:hover+.bar,.card svg g:hover .bar{opacity:.8}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;font-size:12px;color:var(--ink2)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:10px;height:10px;border-radius:2px;display:inline-block}
+.pie-wrap{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.pie-wrap>div:first-child{flex:0 1 240px;min-width:180px}
+.pie-legend{flex:1 1 180px;flex-direction:column;gap:8px;margin:0}
+.pie-legend span{width:100%}
+.pie-legend b{color:var(--ink);font-weight:500;margin-left:auto;padding-left:12px}
+.card svg .pays{stroke:var(--bg2);stroke-width:.5}
+.card svg .pays.on:hover{stroke:var(--ink);stroke-width:1.2}
+#tip{position:fixed;pointer-events:none;background:#0b0b0b;color:#f0efec;border:1px solid var(--line);font:13px Inter,sans-serif;padding:8px 10px;border-radius:8px;opacity:0;transition:opacity .1s;z-index:10;max-width:260px}
+#tip b{font-weight:500}
+details{margin-top:16px;background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:12px 16px}
+details summary{cursor:pointer;color:var(--ink2);font-size:14px}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}
+th{color:var(--ink3);font-weight:500}
+footer{text-align:center;color:var(--ink3);font-size:12px;padding:30px}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<header>
+  <h1>Mes séances</h1>
+  <p id="tagline">L'historique de mes films vus au cinéma</p>
+  <nav role="tablist">
+    <button role="tab" id="tab-films" aria-selected="true" data-view="films">Les films</button>
+    <button role="tab" id="tab-stats" aria-selected="false" data-view="stats">Statistiques</button>
+  </nav>
+</header>
+<main>
+  <section id="view-films">
+    <div class="toolbar"><input id="q" type="search" placeholder="Anatomie, Kore-eda, Japon…" aria-label="Rechercher un film, un réalisateur ou un pays"></div>
+    <div class="chips" id="genreChips"></div>
+    <div id="list"></div>
+  </section>
+  <section id="view-stats" hidden>
+    <div class="kpis" id="kpis"></div>
+    <div class="charts">
+      <div class="card wide"><h3>Films par année</h3><p class="sub">Répartis par genre</p><div id="c-years"></div><div class="legend" id="lg-years"></div></div>
+      <div class="card wide"><h3>Nationalités des films</h3><p class="sub">Tous les pays coproducteurs sont comptés</p><div id="c-carte"></div><div class="legend" id="lg-carte"></div></div>
+      <div class="card"><h3>Genres</h3><p class="sub">Part de chaque genre</p><div class="pie-wrap"><div id="c-genres"></div><div class="legend pie-legend" id="lg-genres"></div></div></div>
+      <div class="card"><h3>Mois des séances</h3><p class="sub">Toutes années confondues</p><div id="c-mois"></div></div>
+    </div>
+    <details><summary>Voir les données en tableau</summary><div id="table"></div></details>
+  </section>
+</main>
+<footer>Genres et nationalités enrichis automatiquement · <span id="maj"></span></footer>
+<div id="tip" role="tooltip"></div>
+<script>
+const GENRES=[
+ ["Drame","--g-drame"],["Thriller","--g-thriller"],["Comédie dramatique","--g-comdram"],["Animation","--g-anim"],
+ ["Action / Aventure","--g-action"],["Science-fiction","--g-sf"],["Documentaire","--g-doc"],["Comédie","--g-com"]];
+const gVar=g=>`var(${(GENRES.find(x=>x[0]===g)||[0,"--ink3"])[1]})`;
+const MOIS=["Janv.","Févr.","Mars","Avril","Mai","Juin","Juil.","Août","Sept.","Oct.","Nov.","Déc."];
+const MOIS_L=["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const norm=s=>s.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
+let FILMS=[],activeGenres=new Set();
+
+fetch("films.json").then(r=>r.json()).then(d=>{
+  FILMS=d.map((f,i)=>({...f,n:i+1}));
+  const ys=[...new Set(FILMS.map(f=>f.annee))];
+  document.getElementById("tagline").textContent=`${FILMS.length} films vus en salle depuis ${Math.min(...ys)}`;
+  document.getElementById("maj").textContent=`Dernière séance : ${FILMS.at(-1).titre}`;
+  buildChips();renderList();renderStats();route();
+}).catch(()=>{document.getElementById("list").innerHTML='<p class="empty">Impossible de charger films.json.</p>'});
+
+/* ---------- onglets ---------- */
+function route(){
+  const v=location.hash==="#stats"?"stats":"films";
+  document.getElementById("view-films").hidden=v!=="films";
+  document.getElementById("view-stats").hidden=v!=="stats";
+  document.querySelectorAll("nav button").forEach(b=>b.setAttribute("aria-selected",b.dataset.view===v));
+}
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{location.hash=b.dataset.view==="stats"?"stats":"films";});
+addEventListener("hashchange",route);
+
+/* ---------- liste ---------- */
+function buildChips(){
+  const box=document.getElementById("genreChips");
+  const counts={};FILMS.forEach(f=>counts[f.genre]=(counts[f.genre]||0)+1);
+  box.innerHTML=GENRES.filter(([g])=>counts[g]).map(([g,v])=>`<button class="chip" aria-pressed="false" data-g="${esc(g)}"><i style="background:var(${v})"></i>${esc(g)} · ${counts[g]}</button>`).join("");
+  box.querySelectorAll(".chip").forEach(c=>c.onclick=()=>{
+    const g=c.dataset.g;activeGenres.has(g)?activeGenres.delete(g):activeGenres.add(g);
+    c.setAttribute("aria-pressed",activeGenres.has(g));renderList();});
+  document.getElementById("q").oninput=renderList;
+}
+function ticket(f){
+  const pays=f.pays.join(" · ");
+  return `<article class="ticket" style="--g:${gVar(f.genre)}">
+    <div class="main">
+      <div class="top"><span>Admit one</span><span>${esc(f.genre)}</span></div>
+      <h3>${esc(f.titre)}</h3>
+      <p class="dir">${esc(f.realisateur)}</p>
+      <div class="meta"><span class="tag"><i></i>${esc(pays)}</span></div>
+    </div>
+    <div class="stub">${MOIS[f.mois-1]}<b>${f.annee}</b><span class="no">N° ${String(f.n).padStart(3,"0")}</span></div>
+  </article>`;
+}
+function renderList(){
+  const q=norm(document.getElementById("q").value.trim());
+  const list=FILMS.filter(f=>(!activeGenres.size||activeGenres.has(f.genre))&&
+    (!q||norm([f.titre,f.realisateur,f.genre,...f.pays].join(" ")).includes(q)));
+  const years=[...new Set(list.map(f=>f.annee))].sort((a,b)=>b-a);
+  document.getElementById("list").innerHTML=years.length?years.map(y=>{
+    const fs=list.filter(f=>f.annee===y).sort((a,b)=>b.mois-a.mois||b.n-a.n);
+    return `<div class="year"><h2>${y}</h2><span>${fs.length} film${fs.length>1?"s":""}</span></div><div class="grid">${fs.map(ticket).join("")}</div>`;
+  }).join(""):'<p class="empty">Aucun film ne correspond.</p>';
+}
+
+/* ---------- stats ---------- */
+const tip=document.getElementById("tip");
+function bindTips(root){
+  root.querySelectorAll("[data-tip]").forEach(el=>{
+    el.addEventListener("mousemove",e=>{tip.innerHTML=el.dataset.tip;tip.style.opacity=1;
+      const x=Math.min(e.clientX+14,innerWidth-tip.offsetWidth-8);tip.style.left=x+"px";tip.style.top=(e.clientY+14)+"px";});
+    el.addEventListener("mouseleave",()=>tip.style.opacity=0);
+  });
+}
+function countBy(arr,key){const m=new Map();arr.forEach(x=>{(Array.isArray(key(x))?key(x):[key(x)]).forEach(k=>m.set(k,(m.get(k)||0)+1))});return m;}
+
+function hbars(el,items,colorFn,unit="film"){ // items:[label,value,tipExtra]
+  const W=520,rowH=30,L=150,R=36,H=items.length*rowH+4;
+  const max=Math.max(...items.map(i=>i[1]));
+  const s=v=>(W-L-R)*v/max;
+  el.innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Diagramme en barres">${items.map(([lab,v,extra],i)=>{
+    const y=i*rowH+4;const w=Math.max(s(v),4);
+    const t=`<b>${esc(lab)}</b><br>${v} ${unit}${v>1?"s":""}${extra?"<br>"+extra:""}`;
+    return `<g data-tip="${esc(t)}"><rect class="hit" x="0" y="${y-2}" width="${W}" height="${rowH}"/>
+      <text x="${L-10}" y="${y+15}" text-anchor="end">${esc(lab)}</text>
+      <path class="bar" d="M${L},${y+4}h${w-4}a4,4 0 0 1 4,4v${10}a4,4 0 0 1 -4,4h${-(w-4)}z" fill="${colorFn(lab)}"/>
+      <text class="val" x="${L+w+6}" y="${y+15}">${v}</text></g>`;}).join("")}</svg>`;
+  bindTips(el);
+}
+function stackedCols(el,cats,series,data,colorOf,tipLab,W=520,H=230){ // data[cat][serie]=n
+  const B=24,T=16,Lp=28;
+  const tot=cats.map(c=>series.reduce((s,k)=>s+(data[c][k]||0),0));
+  const max=Math.max(...tot),step=Math.ceil(max/4/2)*2||1,top=Math.ceil(max/step)*step;
+  const y=v=>H-B-(H-B-T)*v/top;
+  const bw=Math.min(56,(W-Lp)/cats.length*0.6),gap=(W-Lp)/cats.length;
+  let g="";
+  for(let v=0;v<=top;v+=step)g+=`<line x1="${Lp}" x2="${W}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" stroke-width="1"/><text x="${Lp-8}" y="${y(v)+4}" text-anchor="end">${v}</text>`;
+  cats.forEach((c,i)=>{
+    const x=Lp+gap*i+(gap-bw)/2;let acc=0;
+    const parts=series.filter(k=>data[c][k]);
+    const t=`<b>${esc(tipLab(c))}</b> · ${tot[i]} film${tot[i]>1?"s":""}<br>`+parts.map(k=>`${esc(k)} : ${data[c][k]}`).join("<br>");
+    g+=`<g data-tip="${esc(t)}"><rect class="hit" x="${x-gap*0.2}" y="${T}" width="${bw+gap*0.4}" height="${H-B-T}"/>`;
+    parts.forEach((k,j)=>{
+      const v=data[c][k],y0=y(acc),y1=y(acc+v);acc+=v;
+      const h=Math.max(y0-y1-2,1),last=j===parts.length-1;
+      g+= last?`<path class="bar" d="M${x},${y0-0}v${-(h-4)}a4,4 0 0 1 4,-4h${bw-8}a4,4 0 0 1 4,4v${h-4}z" fill="${colorOf(k)}"/>`
+              :`<rect class="bar" x="${x}" y="${y0-h}" width="${bw}" height="${h}" fill="${colorOf(k)}"/>`;
+    });
+    g+=`<text class="val" x="${x+bw/2}" y="${y(tot[i])-6}" text-anchor="middle">${tot[i]||""}</text><text x="${x+bw/2}" y="${H-6}" text-anchor="middle">${esc(c)}</text></g>`;
+  });
+  el.innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Histogramme empilé">${g}</svg>`;
+  bindTips(el);
+}
+function pie(el,items,colorOf){
+  const R=110,C=120,tot=items.reduce((s,i)=>s+i[1],0);let a0=-Math.PI/2,g="";
+  items.forEach(([lab,v])=>{
+    const a1=a0+v/tot*2*Math.PI,large=a1-a0>Math.PI?1:0;
+    const p=(a)=>`${(C+R*Math.cos(a)).toFixed(2)},${(C+R*Math.sin(a)).toFixed(2)}`;
+    const t=`<b>${esc(lab)}</b><br>${v} film${v>1?"s":""} · ${Math.round(v/tot*100)} %`;
+    g+=`<path class="bar" data-tip="${esc(t)}" d="M${C},${C}L${p(a0)}A${R},${R} 0 ${large} 1 ${p(a1)}Z" fill="${colorOf(lab)}" stroke="var(--bg2)" stroke-width="2" stroke-linejoin="round"/>`;
+    a0=a1;});
+  el.innerHTML=`<svg viewBox="0 0 240 240" role="img" aria-label="Camembert des genres">${g}</svg>`;
+  bindTips(el);
+}
+const PAYS_ID={"France":"250","États-Unis":"840","Japon":"392","Corée du Sud":"410","Italie":"380","Espagne":"724","Belgique":"056","Chine":"156","Iran":"364","Irlande":"372","Lettonie":"428","Royaume-Uni":"826","Suisse":"756"};
+const BINS=[[1,1,"1 film"],[2,4,"2 – 4 films"],[5,9,"5 – 9 films"],[10,19,"10 – 19 films"],[20,1e9,"20 films et +"]];
+const STEPS=["#5b4a24","#85682b","#b08832","#d6a83f","#f3cd72"];
+function carte(el,counts){
+  const byId={};counts.forEach((v,k)=>{if(PAYS_ID[k])byId[PAYS_ID[k]]=[k,v]});
+  const col=v=>STEPS[BINS.findIndex(b=>v>=b[0]&&v<=b[1])];
+  fetch("monde.json").then(r=>r.json()).then(m=>{
+    el.innerHTML=`<svg viewBox="0 0 ${m.w} ${m.h}" role="img" aria-label="Carte du monde des nationalités des films">${
+      m.pays.map(p=>{const c=byId[p.id];
+        if(!c)return `<path class="pays" d="${p.d}" fill="#2e2d29"/>`;
+        const t=FILMS.filter(f=>f.pays.includes(c[0])).map(f=>f.titre);
+        const tipTxt=`<b>${esc(c[0])}</b> · ${c[1]} film${c[1]>1?"s":""}<br>${esc(t.slice(0,5).join(", "))}${t.length>5?"…":""}`;
+        return `<path class="pays on" data-tip="${esc(tipTxt)}" d="${p.d}" fill="${col(c[1])}"/>`;}).join("")}</svg>`;
+    bindTips(el);
+  }).catch(()=>{el.innerHTML="<p class=\"empty\">Carte indisponible.</p>"});
+  document.getElementById("lg-carte").innerHTML=BINS.map((b,i)=>`<span><i style="background:${STEPS[i]}"></i>${b[2]}</span>`).join("")+`<span><i style="background:#2e2d29"></i>aucun</span>`;
+}
+function legend(el,items){el.innerHTML=items.map(([l,c])=>`<span><i style="background:${c}"></i>${esc(l)}</span>`).join("");}
+
+function renderStats(){
+  const years=[...new Set(FILMS.map(f=>f.annee))].sort();
+  const byYear=countBy(FILMS,f=>f.annee);
+  const pays=countBy(FILMS,f=>f.pays);
+  const real=countBy(FILMS,f=>f.realisateur.split(" & "));
+  const fullYears=years.filter(y=>y>years[0]);
+  const avg=FILMS.filter(f=>f.annee>years[0]).length/fullYears.length;
+  const bestY=[...byYear].sort((a,b)=>b[1]-a[1])[0];
+  const fr=FILMS.filter(f=>f.pays[0]==="France").length;
+  document.getElementById("kpis").innerHTML=[
+    ["Films vus",FILMS.length,`${years[0]} – ${years.at(-1)}`],
+    ["Par an",avg.toFixed(1).replace(".",","),`moyenne ${fullYears[0]}–${fullYears.at(-1)}`],
+    ["Record",bestY[1],`en ${bestY[0]}`],
+    ["Pays",pays.size,"pays de production"],
+    ["Films français",Math.round(fr/FILMS.length*100)+" %",`${fr} films en production principale`]
+  ].map(([l,v,s])=>`<div class="kpi"><small>${l}</small><b>${v}</b><em>${s}</em></div>`).join("");
+
+  // années x genre
+  const gs=GENRES.map(g=>g[0]).filter(g=>FILMS.some(f=>f.genre===g));
+  const dY={};years.forEach(y=>{dY[y]={};FILMS.filter(f=>f.annee===y).forEach(f=>dY[y][f.genre]=(dY[y][f.genre]||0)+1)});
+  stackedCols(document.getElementById("c-years"),years,gs,dY,gVar,y=>y,1080,260);
+  legend(document.getElementById("lg-years"),gs.map(g=>[g,gVar(g)]));
+
+  // genres : camembert
+  const gc=[...countBy(FILMS,f=>f.genre)].sort((a,b)=>b[1]-a[1]);
+  pie(document.getElementById("c-genres"),gc,gVar);
+  document.getElementById("lg-genres").innerHTML=gc.map(([g,v])=>`<span><i style="background:${gVar(g)}"></i>${esc(g)}<b>${v} · ${Math.round(v/FILMS.length*100)} %</b></span>`).join("");
+
+  // carte du monde
+  carte(document.getElementById("c-carte"),countBy(FILMS,f=>f.pays));
+
+  // mois
+  const m=countBy(FILMS,f=>f.mois);
+  const dM={};MOIS.forEach((_,i)=>{dM[MOIS[i]]={Films:m.get(i+1)||0}});
+  stackedCols(document.getElementById("c-mois"),MOIS.map(x=>x.replace(".","")).map((x,i)=>MOIS[i]),["Films"],dM,()=>"var(--gold)",c=>MOIS_L[MOIS.indexOf(c)]);
+
+  document.getElementById("table").innerHTML=`<table><thead><tr><th>N°</th><th>Date</th><th>Titre</th><th>Réalisation</th><th>Genre</th><th>Pays</th></tr></thead><tbody>${
+    FILMS.map(f=>`<tr><td>${f.n}</td><td>${MOIS[f.mois-1]} ${f.annee}</td><td>${esc(f.titre)}</td><td>${esc(f.realisateur)}</td><td>${esc(f.genre)}</td><td>${esc(f.pays.join(", "))}</td></tr>`).join("")}</tbody></table>`;
+}
+</script>
+</body>
+</html>
